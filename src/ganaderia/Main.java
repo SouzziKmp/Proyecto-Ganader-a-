@@ -32,7 +32,20 @@ public class Main {
     private static JLabel statusLabel;
     private static JLabel welcomeLabel;
     private static final String ADMIN_PANEL_TITLE = "Usuarios";
+    private static final String TAB_ANIMALES = "Animales";
+    private static final String TAB_PRODUCCION = "Produccion";
+    private static final String TAB_VENTAS = "Ventas";
+    private static final String TAB_TRASLADO = "Traslado";
+    private static final String TAB_SALUD = "Salud";
+    private static final String TAB_REPORTES = "Reportes";
     private static final String[] USER_ROLES = {"ADMIN", "VETERINARIO", "OPERARIO", "GERENTE"};
+    private static JPanel animalesPanel;
+    private static JPanel produccionPanel;
+    private static JPanel ventasPanel;
+    private static JPanel trasladoPanel;
+    private static JPanel saludPanel;
+    private static JPanel reportesPanel;
+    private static JPanel usuariosPanel;
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(Main::createAndShowGUI);
@@ -123,12 +136,15 @@ public class Main {
 
         tabs = new JTabbedPane();
 
-        tabs.addTab("Animales", createAnimalsPanel());
-        tabs.addTab("Produccion", createProductionPanel());
-        tabs.addTab("Ventas", createSalesPanel());
-        tabs.addTab("Traslado", createTransferPanel());
-        tabs.addTab("Salud", createHealthPanel());
-        tabs.addTab("Reportes", createReportsPanel());
+        animalesPanel = createAnimalsPanel();
+        produccionPanel = createProductionPanel();
+        ventasPanel = createSalesPanel();
+        trasladoPanel = createTransferPanel();
+        saludPanel = createHealthPanel();
+        reportesPanel = createReportsPanel();
+        usuariosPanel = createUserAdminPanel();
+
+        manageTabsByRole();
 
         panel.add(header, BorderLayout.NORTH);
         panel.add(tabs, BorderLayout.CENTER);
@@ -585,7 +601,7 @@ public class Main {
             currentUserRole = sesion[1] != null ? sesion[1].trim().toUpperCase() : "";
             welcomeLabel.setText(String.format("Bienvenido, %s - Rol: %s", username, currentUserRole));
             statusLabel.setText(" ");
-            manageAdminTab();
+            manageTabsByRole();
             showCard(MAIN_PANEL);
         } else {
             statusLabel.setText("Acceso denegado: " + (sesion != null ? sesion[2] : "Error de autenticacion"));
@@ -594,7 +610,7 @@ public class Main {
 
     private static void logout() {
         currentUserRole = "";
-        manageAdminTab();
+        manageTabsByRole();
         showCard(LOGIN_PANEL);
         statusLabel.setText("Sesion cerrada. Ingrese nuevamente.");
     }
@@ -604,13 +620,34 @@ public class Main {
         cl.show(cards, name);
     }
 
-    private static void manageAdminTab() {
-        int existingIndex = tabs.indexOfTab(ADMIN_PANEL_TITLE);
+    private static void manageTabsByRole() {
+        tabs.removeAll();
+
         boolean isAdmin = "ADMIN".equalsIgnoreCase(currentUserRole);
-        if (isAdmin && existingIndex < 0) {
-            tabs.addTab(ADMIN_PANEL_TITLE, createUserAdminPanel());
-        } else if (!isAdmin && existingIndex >= 0) {
-            tabs.removeTabAt(existingIndex);
+        boolean isVeterinario = "VETERINARIO".equalsIgnoreCase(currentUserRole);
+        boolean isOperario = "OPERARIO".equalsIgnoreCase(currentUserRole);
+        boolean isGerente = "GERENTE".equalsIgnoreCase(currentUserRole);
+
+        if (isAdmin || isGerente || isVeterinario) {
+            tabs.addTab(TAB_ANIMALES, animalesPanel);
+        }
+        if (isAdmin || isGerente || isOperario) {
+            tabs.addTab(TAB_PRODUCCION, produccionPanel);
+        }
+        if (isAdmin || isGerente) {
+            tabs.addTab(TAB_VENTAS, ventasPanel);
+        }
+        if (isAdmin || isGerente || isOperario || isVeterinario) {
+            tabs.addTab(TAB_TRASLADO, trasladoPanel);
+        }
+        if (isAdmin || isGerente || isVeterinario) {
+            tabs.addTab(TAB_SALUD, saludPanel);
+        }
+        if (isAdmin || isGerente) {
+            tabs.addTab(TAB_REPORTES, reportesPanel);
+        }
+        if (isAdmin) {
+            tabs.addTab(ADMIN_PANEL_TITLE, usuariosPanel);
         }
     }
 
