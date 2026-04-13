@@ -9,15 +9,13 @@ import java.util.List;
 
 /**
  * Data Access Object para ANIMAL.
- *
- * REGLA DEL PROYECTO: NO se escribe SQL directo en la interfaz.
- * Toda operacion pasa por un Store Procedure o bloque PL/SQL.
+
  */
 public class AnimalDAO {
 
-    // ----------------------------------------------------------
+    
     // REGISTRAR un animal nuevo  →  PKG_ANIMALES.SP_REGISTRAR_ANIMAL
-    // ----------------------------------------------------------
+    
     public String registrarAnimal(Animal a) {
         String resultado = "";
         String sql = "{ CALL PKG_ANIMALES.SP_REGISTRAR_ANIMAL(?,?,?,?,?,?,?) }";
@@ -47,9 +45,9 @@ public class AnimalDAO {
         return resultado;
     }
 
-    // ----------------------------------------------------------
+    
     // TRASLADAR un animal a otro potrero  →  PKG_ANIMALES.SP_TRASLADAR_ANIMAL
-    // ----------------------------------------------------------
+    
     public String trasladarAnimal(int idAnimal, int idPotreroDestino) {
         String resultado = "";
         String sql = "{ CALL PKG_ANIMALES.SP_TRASLADAR_ANIMAL(?,?,?) }";
@@ -72,9 +70,9 @@ public class AnimalDAO {
         return resultado;
     }
 
-    // ----------------------------------------------------------
+    
     // DAR DE BAJA un animal  →  PKG_ANIMALES.SP_BAJA_ANIMAL
-    // ----------------------------------------------------------
+    
     public String bajaAnimal(int idAnimal, String motivo) {
         String resultado = "";
         String sql = "{ CALL PKG_ANIMALES.SP_BAJA_ANIMAL(?,?,?) }";
@@ -97,10 +95,10 @@ public class AnimalDAO {
         return resultado;
     }
 
-    // ----------------------------------------------------------
+    
     // OBTENER EDAD EN MESES  →  PKG_ANIMALES.FN_EDAD_MESES
-    // Llamada a funcion PL/SQL (retorna un valor)
-    // ----------------------------------------------------------
+   
+   
     public double obtenerEdadMeses(int idAnimal) {
         double meses = -1;
         String sql = "{ ? = CALL PKG_ANIMALES.FN_EDAD_MESES(?) }";
@@ -120,10 +118,9 @@ public class AnimalDAO {
         return meses;
     }
 
-    // ----------------------------------------------------------
+    
     // LISTAR animales activos (cursor / ResultSet via bloque PL/SQL)
-    // Usamos REF CURSOR para traer datos sin SQL en Java
-    // ----------------------------------------------------------
+  
     public List<Animal> listarAnimalesActivos(int idFinca) {
         List<Animal> lista = new ArrayList<>();
 
@@ -167,9 +164,9 @@ public class AnimalDAO {
         return lista;
     }
 
-    // ----------------------------------------------------------
+    
     // VALIDAR FORMATO DE ARETE  →  FN_VALIDAR_ARETE
-    // ----------------------------------------------------------
+    
     public String validarArete(String arete) {
         String resultado = "ERROR";
         String sql = "{ ? = CALL FN_VALIDAR_ARETE(?) }";

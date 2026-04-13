@@ -1,6 +1,6 @@
-// ============================================================
+
 // ARCHIVO: UsuarioDAO.java
-// ============================================================
+
 package ganaderia.dao;
 
 import ganaderia.db.ConexionADB;
@@ -12,9 +12,9 @@ import java.sql.*;
  */
 public class UsuarioDAO {
 
-    // ----------------------------------------------------------
+    
     // CREAR USUARIO  →  SP_INGRESA_USUARIO
-    // ----------------------------------------------------------
+   
     public String ingresarUsuario(String nombre, String username,
                                   String passwordHash, String rol) {
         String resultado = "";
@@ -72,9 +72,9 @@ public class UsuarioDAO {
 }
 
 
-// ============================================================
+
 // ARCHIVO: Animal.java  — Modelo de datos
-// ============================================================
+
 package ganaderia.modelo;
 
 import java.util.Date;
@@ -127,9 +127,9 @@ public class Animal {
 }
 
 
-// ============================================================
+
 // ARCHIVO: Main.java  — Programa principal de demostración
-// ============================================================
+
 package ganaderia;
 
 import ganaderia.dao.AnimalDAO;
@@ -329,7 +329,7 @@ public class Main {
     }
 
     // ----------------------------------------------------------
-    // Hash simple para demo (en produccion usar SHA-256 + salt)
+    // Hash simple para demo 
     private static String hashSimple(String texto) {
         return String.valueOf(texto.hashCode());
     }

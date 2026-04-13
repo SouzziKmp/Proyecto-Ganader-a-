@@ -3,37 +3,15 @@ package ganaderia.db;
 import java.sql.*;
 import java.util.Properties;
 
-/**
- * Conexion a Oracle Autonomous Database — DBORACLECLOUD
- *
- * Wallet: Wallet_DBORACLECLOUD.zip
- * Host:   adb.us-ashburn-1.oraclecloud.com
- * Puerto: 1522 (TLS)
- *
- * Aliases disponibles en tu tnsnames.ora:
- *   dboraclecloud_high      <- usa este para la app principal
- *   dboraclecloud_medium
- *   dboraclecloud_low
- *   dboraclecloud_tp
- *   dboraclecloud_tpurgent
- *
- * DEPENDENCIAS (agregar al classpath / lib/):
- *   ojdbc11.jar, oraclepki.jar, osdt_core.jar, osdt_cert.jar
- */
+
 public class ConexionADB {
 
-    // -------------------------------------------------------
-    // CAMBIA SOLO ESTAS 3 LINEAS con tus datos:
-    // -------------------------------------------------------
-
-    // Ruta COMPLETA donde descomprimiste el wallet en tu PC
-    // Ejemplo Windows: "C:/ProyectoGanadero/wallet_DBORACLECLOUD"
-    // Ejemplo Mac/Linux: "/Users/tuUsuario/wallet_DBORACLECLOUD"
+   
     private static final String WALLET_PATH =
             "C:\Oracle\Wallet_DBORACLECLOUD";
             // ↑ Cambia esta ruta a donde tengas el wallet en tu PC
 
-    // Contraseña que pusiste al descargar el wallet desde OCI/SQL Developer
+    // Contraseña del wallet
     private static final String WALLET_PASSWORD = "PWusrnewexp24$";
             // ↑ Cambia por la contraseña que usaste al descargar el wallet
 
@@ -41,9 +19,7 @@ public class ConexionADB {
     private static final String DB_USER     = "PROYECTO";
     private static final String DB_PASSWORD = "PWusrnewexp24$";
 
-    // -------------------------------------------------------
-    // NO cambies nada de aqui en adelante
-    // -------------------------------------------------------
+   
 
     // Alias de tu tnsnames.ora — se usa _high para mayor prioridad
     private static final String TNS_ALIAS = "dboraclecloud_high";
@@ -62,8 +38,8 @@ public class ConexionADB {
     }
 
     private static Connection crearConexion() throws SQLException {
-        // Metodo 1 — Wallet cwallet.sso (sin password, mas simple)
-        // Es el metodo recomendado para ADB con wallet descargado desde OCI
+        // Metodo 1 — Wallet cwallet.sso (sin password)
+        
         Properties props = new Properties();
         props.setProperty("user",     DB_USER);
         props.setProperty("password", DB_PASSWORD);
@@ -84,7 +60,7 @@ public class ConexionADB {
 
     /**
      * Alternativa con JKS (si cwallet.sso falla).
-     * Descomenta este metodo y comenta crearConexion() si es necesario.
+     
      */
     @SuppressWarnings("unused")
     private static Connection crearConexionJKS() throws SQLException {
@@ -106,8 +82,7 @@ public class ConexionADB {
     }
 
     /**
-     * Prueba rapida de conexion — corre este main para verificar
-     * que todo esta configurado correctamente antes de levantar la app.
+     
      */
     public static void main(String[] args) {
         System.out.println("=== TEST DE CONEXION ORACLE ADB ===");

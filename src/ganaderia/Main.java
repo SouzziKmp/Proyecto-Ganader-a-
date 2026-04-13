@@ -4,7 +4,7 @@ import ganaderia.dao.AnimalDAO;
 import ganaderia.dao.ProduccionVentasDAO;
 import ganaderia.dao.UsuarioDAO;
 import ganaderia.modelo.Animal;
-
+import ganaderia.dao.SaludDAO;
 import javax.swing.*;
 import java.awt.*;
 import java.math.BigInteger;
@@ -21,13 +21,18 @@ public class Main {
     private static final AnimalDAO animalDAO = new AnimalDAO();
     private static final ProduccionVentasDAO pvDAO = new ProduccionVentasDAO();
     private static final UsuarioDAO usuarioDAO = new UsuarioDAO();
+    private static final SaludDAO saludDAO = new SaludDAO();
 
     private static JFrame frame;
     private static JPanel cards;
+    private static JTabbedPane tabs;
+    private static String currentUserRole = "";
     private static final String LOGIN_PANEL = "login";
     private static final String MAIN_PANEL = "main";
     private static JLabel statusLabel;
     private static JLabel welcomeLabel;
+    private static final String ADMIN_PANEL_TITLE = "Usuarios";
+    private static final String[] USER_ROLES = {"ADMIN", "VETERINARIO", "OPERARIO", "GERENTE"};
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(Main::createAndShowGUI);
@@ -116,11 +121,13 @@ public class Main {
         header.add(welcomeLabel, BorderLayout.WEST);
         header.add(logoutButton, BorderLayout.EAST);
 
-        JTabbedPane tabs = new JTabbedPane();
+        tabs = new JTabbedPane();
+
         tabs.addTab("Animales", createAnimalsPanel());
         tabs.addTab("Produccion", createProductionPanel());
         tabs.addTab("Ventas", createSalesPanel());
         tabs.addTab("Traslado", createTransferPanel());
+        tabs.addTab("Salud", createHealthPanel());
         tabs.addTab("Reportes", createReportsPanel());
 
         panel.add(header, BorderLayout.NORTH);
@@ -156,9 +163,10 @@ public class Main {
 
         JPanel form = new JPanel(new GridBagLayout());
         form.setBorder(BorderFactory.createTitledBorder("Registrar animal"));
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = 1;
+
+        GridBagConstraints gbcForm = new GridBagConstraints();
+        gbcForm.insets = new Insets(6, 6, 6, 6);
+        gbcForm.anchor = GridBagConstraints.WEST;
 
         JLabel potreroLabel = new JLabel("ID potrero:");
         JLabel areteLabel = new JLabel("Codigo arete:");
@@ -173,37 +181,71 @@ public class Main {
         JTextField pesoField = new JTextField(8);
         JButton registrarButton = new JButton("Registrar animal");
 
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        form.add(potreroLabel, gbc);
-        gbc.gridx = 1;
-        form.add(potreroField, gbc);
-        gbc.gridx = 2;
-        form.add(areteLabel, gbc);
-        gbc.gridx = 3;
-        form.add(areteField, gbc);
+        gbcForm.gridx = 0;
+        gbcForm.gridy = 0;
+        form.add(potreroLabel, gbcForm);
+        gbcForm.gridx = 1;
+        form.add(potreroField, gbcForm);
+        gbcForm.gridx = 2;
+        form.add(areteLabel, gbcForm);
+        gbcForm.gridx = 3;
+        form.add(areteField, gbcForm);
 
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        form.add(razaLabel, gbc);
-        gbc.gridx = 1;
-        form.add(razaField, gbc);
-        gbc.gridx = 2;
-        form.add(sexoLabel, gbc);
-        gbc.gridx = 3;
-        form.add(sexoField, gbc);
+        gbcForm.gridx = 0;
+        gbcForm.gridy = 1;
+        form.add(razaLabel, gbcForm);
+        gbcForm.gridx = 1;
+        form.add(razaField, gbcForm);
+        gbcForm.gridx = 2;
+        form.add(sexoLabel, gbcForm);
+        gbcForm.gridx = 3;
+        form.add(sexoField, gbcForm);
 
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        form.add(pesoLabel, gbc);
-        gbc.gridx = 1;
-        form.add(pesoField, gbc);
-        gbc.gridx = 3;
-        form.add(registrarButton, gbc);
+        gbcForm.gridx = 0;
+        gbcForm.gridy = 2;
+        form.add(pesoLabel, gbcForm);
+        gbcForm.gridx = 1;
+        form.add(pesoField, gbcForm);
+        gbcForm.gridx = 3;
+        form.add(registrarButton, gbcForm);
+
+        JPanel bajaPanel = new JPanel(new GridBagLayout());
+        bajaPanel.setBorder(BorderFactory.createTitledBorder("Dar de baja animal"));
+
+        GridBagConstraints gbcBaja = new GridBagConstraints();
+        gbcBaja.insets = new Insets(6, 6, 6, 6);
+        gbcBaja.anchor = GridBagConstraints.WEST;
+
+        JLabel bajaIdLabel = new JLabel("ID animal:");
+        JLabel motivoLabel = new JLabel("Motivo:");
+        JTextField bajaIdField = new JTextField(8);
+        JTextField motivoField = new JTextField(20);
+        JButton bajaButton = new JButton("Dar de baja");
+
+        gbcBaja.gridx = 0;
+        gbcBaja.gridy = 0;
+        bajaPanel.add(bajaIdLabel, gbcBaja);
+        gbcBaja.gridx = 1;
+        bajaPanel.add(bajaIdField, gbcBaja);
+
+        gbcBaja.gridx = 0;
+        gbcBaja.gridy = 1;
+        bajaPanel.add(motivoLabel, gbcBaja);
+        gbcBaja.gridx = 1;
+        bajaPanel.add(motivoField, gbcBaja);
+
+        gbcBaja.gridx = 1;
+        gbcBaja.gridy = 2;
+        gbcBaja.anchor = GridBagConstraints.CENTER;
+        bajaPanel.add(bajaButton, gbcBaja);
+
+        JPanel bottom = new JPanel(new GridLayout(2, 1, 10, 10));
+        bottom.add(form);
+        bottom.add(bajaPanel);
 
         panel.add(top, BorderLayout.NORTH);
         panel.add(scrollLista, BorderLayout.CENTER);
-        panel.add(form, BorderLayout.SOUTH);
+        panel.add(bottom, BorderLayout.SOUTH);
 
         listarButton.addActionListener(e -> {
             try {
@@ -250,6 +292,23 @@ public class Main {
                 JOptionPane.showMessageDialog(frame, resultado, "Registrar animal", JOptionPane.INFORMATION_MESSAGE);
             } catch (NumberFormatException ex) {
                 mostrarError("ID de potrero y peso deben ser numericos.");
+            }
+        });
+
+        bajaButton.addActionListener(e -> {
+            try {
+                int idAnimal = Integer.parseInt(bajaIdField.getText().trim());
+                String motivo = motivoField.getText().trim();
+
+                if (motivo.isEmpty()) {
+                    mostrarError("Debe indicar un motivo de baja.");
+                    return;
+                }
+
+                String resultado = animalDAO.bajaAnimal(idAnimal, motivo);
+                JOptionPane.showMessageDialog(frame, resultado, "Baja animal", JOptionPane.INFORMATION_MESSAGE);
+            } catch (NumberFormatException ex) {
+                mostrarError("ID animal debe ser numerico.");
             }
         });
 
@@ -437,6 +496,13 @@ public class Main {
         JButton totalButton = new JButton("Total ventas");
         JLabel totalResult = new JLabel(" ");
 
+        JLabel fincaLabel = new JLabel("ID finca:");
+        JTextField fincaField = new JTextField(8);
+        JButton fincaButton = new JButton("Reporte ventas finca");
+        JTextArea reporteArea = new JTextArea(8, 40);
+        reporteArea.setEditable(false);
+        JScrollPane reporteScroll = new JScrollPane(reporteArea);
+
         gbc.gridx = 0;
         gbc.gridy = 0;
         panel.add(edadLabel, gbc);
@@ -460,6 +526,20 @@ public class Main {
         panel.add(totalButton, gbc);
         gbc.gridx = 5;
         panel.add(totalResult, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        panel.add(fincaLabel, gbc);
+        gbc.gridx = 1;
+        panel.add(fincaField, gbc);
+        gbc.gridx = 2;
+        panel.add(fincaButton, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.gridwidth = 6;
+        gbc.fill = GridBagConstraints.BOTH;
+        panel.add(reporteScroll, gbc);
 
         edadButton.addActionListener(e -> {
             try {
@@ -486,14 +566,26 @@ public class Main {
             }
         });
 
+        fincaButton.addActionListener(e -> {
+            try {
+                int idFinca = Integer.parseInt(fincaField.getText().trim());
+                String reporte = pvDAO.reporteVentasPorFinca(idFinca);
+                reporteArea.setText(reporte);
+            } catch (NumberFormatException ex) {
+                mostrarError("ID finca debe ser numerico.");
+            }
+        });
+
         return panel;
     }
 
     private static void login(String username, String password) {
         String[] sesion = usuarioDAO.login(username, hashSimple(password));
         if (sesion != null && sesion.length == 3 && sesion[2].startsWith("OK")) {
-            welcomeLabel.setText(String.format("Bienvenido, %s - Rol: %s", username, sesion[1]));
+            currentUserRole = sesion[1] != null ? sesion[1].trim().toUpperCase() : "";
+            welcomeLabel.setText(String.format("Bienvenido, %s - Rol: %s", username, currentUserRole));
             statusLabel.setText(" ");
+            manageAdminTab();
             showCard(MAIN_PANEL);
         } else {
             statusLabel.setText("Acceso denegado: " + (sesion != null ? sesion[2] : "Error de autenticacion"));
@@ -501,6 +593,8 @@ public class Main {
     }
 
     private static void logout() {
+        currentUserRole = "";
+        manageAdminTab();
         showCard(LOGIN_PANEL);
         statusLabel.setText("Sesion cerrada. Ingrese nuevamente.");
     }
@@ -508,6 +602,103 @@ public class Main {
     private static void showCard(String name) {
         CardLayout cl = (CardLayout) cards.getLayout();
         cl.show(cards, name);
+    }
+
+    private static void manageAdminTab() {
+        int existingIndex = tabs.indexOfTab(ADMIN_PANEL_TITLE);
+        boolean isAdmin = "ADMIN".equalsIgnoreCase(currentUserRole);
+        if (isAdmin && existingIndex < 0) {
+            tabs.addTab(ADMIN_PANEL_TITLE, createUserAdminPanel());
+        } else if (!isAdmin && existingIndex >= 0) {
+            tabs.removeTabAt(existingIndex);
+        }
+    }
+
+    private static JPanel createUserAdminPanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBorder(BorderFactory.createTitledBorder("Creación de usuarios - Solo ADMIN"));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(8, 8, 8, 8);
+        gbc.anchor = GridBagConstraints.WEST;
+
+        JLabel nombreLabel = new JLabel("Nombre completo:");
+        JLabel usuarioLabel = new JLabel("Usuario:");
+        JLabel claveLabel = new JLabel("Password:");
+        JLabel confirmarLabel = new JLabel("Confirmar password:");
+        JLabel rolLabel = new JLabel("Rol:");
+
+        JTextField nombreField = new JTextField(20);
+        JTextField usuarioField = new JTextField(20);
+        JPasswordField claveField = new JPasswordField(20);
+        JPasswordField confirmarField = new JPasswordField(20);
+        JComboBox<String> rolCombo = new JComboBox<>(USER_ROLES);
+        JButton crearButton = new JButton("Crear usuario");
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        panel.add(nombreLabel, gbc);
+        gbc.gridx = 1;
+        panel.add(nombreField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        panel.add(usuarioLabel, gbc);
+        gbc.gridx = 1;
+        panel.add(usuarioField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        panel.add(claveLabel, gbc);
+        gbc.gridx = 1;
+        panel.add(claveField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        panel.add(confirmarLabel, gbc);
+        gbc.gridx = 1;
+        panel.add(confirmarField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        panel.add(rolLabel, gbc);
+        gbc.gridx = 1;
+        panel.add(rolCombo, gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = 5;
+        gbc.anchor = GridBagConstraints.CENTER;
+        panel.add(crearButton, gbc);
+
+        crearButton.addActionListener(e -> {
+            String nombre = nombreField.getText().trim();
+            String usuario = usuarioField.getText().trim();
+            String clave = new String(claveField.getPassword()).trim();
+            String confirmar = new String(confirmarField.getPassword()).trim();
+            String rol = rolCombo.getSelectedItem().toString();
+
+            if (nombre.isEmpty() || usuario.isEmpty() || clave.isEmpty() || confirmar.isEmpty()) {
+                mostrarError("Complete todos los campos para crear el usuario.");
+                return;
+            }
+            if (!clave.equals(confirmar)) {
+                mostrarError("Las contraseñas no coinciden.");
+                return;
+            }
+
+            String resultado = usuarioDAO.ingresarUsuario(nombre, usuario, hashSimple(clave), rol);
+            JOptionPane.showMessageDialog(frame, resultado, "Crear usuario", JOptionPane.INFORMATION_MESSAGE);
+
+            if (resultado != null && resultado.toUpperCase().contains("OK")) {
+                nombreField.setText("");
+                usuarioField.setText("");
+                claveField.setText("");
+                confirmarField.setText("");
+                rolCombo.setSelectedIndex(0);
+            }
+        });
+
+        return panel;
     }
 
     private static void mostrarError(String mensaje) {
@@ -523,4 +714,195 @@ public class Main {
             throw new RuntimeException("MD5 algorithm not found", e);
         }
     }
+
+    private static JPanel createHealthPanel() {
+        JPanel eventoPanel = new JPanel(new GridBagLayout());
+        eventoPanel.setBorder(BorderFactory.createTitledBorder("Registrar evento de salud"));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(8, 8, 8, 8);
+        gbc.anchor = GridBagConstraints.WEST;
+
+        JLabel animalLabel = new JLabel("ID animal:");
+        JLabel empleadoLabel = new JLabel("ID empleado:");
+        JLabel tipoLabel = new JLabel("Tipo evento:");
+        JLabel descripcionLabel = new JLabel("Descripcion:");
+
+        JTextField animalField = new JTextField(10);
+        JTextField empleadoField = new JTextField(10);
+        JComboBox<String> tipoCombo = new JComboBox<>(
+                new String[]{"VACUNA", "ENFERMEDAD", "REVISION"}
+        );
+        JTextField descripcionField = new JTextField(20);
+        JButton registrarButton = new JButton("Registrar evento");
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        eventoPanel.add(animalLabel, gbc);
+        gbc.gridx = 1;
+        eventoPanel.add(animalField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        eventoPanel.add(empleadoLabel, gbc);
+        gbc.gridx = 1;
+        eventoPanel.add(empleadoField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        eventoPanel.add(tipoLabel, gbc);
+        gbc.gridx = 1;
+        eventoPanel.add(tipoCombo, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        eventoPanel.add(descripcionLabel, gbc);
+        gbc.gridx = 1;
+        eventoPanel.add(descripcionField, gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = 4;
+        gbc.anchor = GridBagConstraints.CENTER;
+        eventoPanel.add(registrarButton, gbc);
+
+        JPanel tratamientoPanel = new JPanel(new GridBagLayout());
+        tratamientoPanel.setBorder(BorderFactory.createTitledBorder("Aplicar medicamento a tratamiento"));
+
+        GridBagConstraints gbcT = new GridBagConstraints();
+        gbcT.insets = new Insets(8, 8, 8, 8);
+        gbcT.anchor = GridBagConstraints.WEST;
+
+        JLabel tratamientoLabel = new JLabel("ID tratamiento:");
+        JLabel medicamentoLabel = new JLabel("ID medicamento:");
+        JLabel dosisLabel = new JLabel("Dosis:");
+        JLabel cantidadLabel = new JLabel("Cantidad:");
+        JLabel obsLabel = new JLabel("Observaciones:");
+
+        JTextField tratamientoField = new JTextField(10);
+        JTextField medicamentoField = new JTextField(10);
+        JTextField dosisField = new JTextField(10);
+        JTextField cantidadField = new JTextField(10);
+        JTextField obsField = new JTextField(20);
+
+        JButton verificarButton = new JButton("Verificar stock");
+        JButton aplicarButton = new JButton("Aplicar tratamiento");
+
+        gbcT.gridx = 0;
+        gbcT.gridy = 0;
+        tratamientoPanel.add(tratamientoLabel, gbcT);
+        gbcT.gridx = 1;
+        tratamientoPanel.add(tratamientoField, gbcT);
+
+        gbcT.gridx = 0;
+        gbcT.gridy = 1;
+        tratamientoPanel.add(medicamentoLabel, gbcT);
+        gbcT.gridx = 1;
+        tratamientoPanel.add(medicamentoField, gbcT);
+
+        gbcT.gridx = 0;
+        gbcT.gridy = 2;
+        tratamientoPanel.add(dosisLabel, gbcT);
+        gbcT.gridx = 1;
+        tratamientoPanel.add(dosisField, gbcT);
+
+        gbcT.gridx = 0;
+        gbcT.gridy = 3;
+        tratamientoPanel.add(cantidadLabel, gbcT);
+        gbcT.gridx = 1;
+        tratamientoPanel.add(cantidadField, gbcT);
+
+        gbcT.gridx = 0;
+        gbcT.gridy = 4;
+        tratamientoPanel.add(obsLabel, gbcT);
+        gbcT.gridx = 1;
+        tratamientoPanel.add(obsField, gbcT);
+
+        gbcT.gridx = 0;
+        gbcT.gridy = 5;
+        tratamientoPanel.add(verificarButton, gbcT);
+        gbcT.gridx = 1;
+        tratamientoPanel.add(aplicarButton, gbcT);
+
+        registrarButton.addActionListener(e -> {
+            try {
+                int idAnimal = Integer.parseInt(animalField.getText().trim());
+                int idEmpleado = Integer.parseInt(empleadoField.getText().trim());
+                String tipoEvento = tipoCombo.getSelectedItem().toString();
+                String descripcion = descripcionField.getText().trim();
+
+                if (descripcion.isEmpty()) {
+                    mostrarError("Debe ingresar una descripcion.");
+                    return;
+                }
+
+                String resultado = saludDAO.registrarEvento(
+                        idAnimal, idEmpleado, tipoEvento, descripcion
+                );
+
+                JOptionPane.showMessageDialog(
+                        frame,
+                        resultado,
+                        "Registrar evento de salud",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+
+            } catch (NumberFormatException ex) {
+                mostrarError("ID animal e ID empleado deben ser numericos.");
+            }
+        });
+
+        verificarButton.addActionListener(e -> {
+            try {
+                int idMedicamento = Integer.parseInt(medicamentoField.getText().trim());
+                double cantidad = Double.parseDouble(cantidadField.getText().trim());
+
+                String resultado = saludDAO.verificarStock(idMedicamento, cantidad);
+
+                JOptionPane.showMessageDialog(
+                        frame,
+                        "Resultado stock: " + resultado,
+                        "Verificar stock",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+            } catch (NumberFormatException ex) {
+                mostrarError("ID medicamento y cantidad deben ser numericos.");
+            }
+        });
+
+        aplicarButton.addActionListener(e -> {
+            try {
+                int idTratamiento = Integer.parseInt(tratamientoField.getText().trim());
+                int idMedicamento = Integer.parseInt(medicamentoField.getText().trim());
+                String dosis = dosisField.getText().trim();
+                double cantidad = Double.parseDouble(cantidadField.getText().trim());
+                String observaciones = obsField.getText().trim();
+
+                if (dosis.isEmpty()) {
+                    mostrarError("Debe ingresar la dosis.");
+                    return;
+                }
+
+                String resultado = saludDAO.aplicarTratamiento(
+                        idTratamiento, idMedicamento, dosis, cantidad, observaciones
+                );
+
+                JOptionPane.showMessageDialog(
+                        frame,
+                        resultado,
+                        "Aplicar tratamiento",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+            } catch (NumberFormatException ex) {
+                mostrarError("ID tratamiento, ID medicamento y cantidad deben ser numericos.");
+            }
+        });
+
+        JPanel contenedor = new JPanel(new GridLayout(2, 1, 10, 10));
+        contenedor.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
+        contenedor.add(eventoPanel);
+        contenedor.add(tratamientoPanel);
+
+        return contenedor;
+    }
+
 }

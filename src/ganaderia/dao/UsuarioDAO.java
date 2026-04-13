@@ -9,9 +9,9 @@ import java.sql.*;
  */
 public class UsuarioDAO {
 
-    // ----------------------------------------------------------
+    
     // CREAR USUARIO  →  SP_INGRESA_USUARIO
-    // ----------------------------------------------------------
+    
     public String ingresarUsuario(String nombre, String username,
                                   String passwordHash, String rol) {
         String resultado = "";
@@ -37,10 +37,9 @@ public class UsuarioDAO {
         return resultado;
     }
 
-    // ----------------------------------------------------------
+    
     // LOGIN  →  SP_LOGIN_USUARIO
-    // Retorna un arreglo: [0]=idUsuario, [1]=rol, [2]=resultado
-    // ----------------------------------------------------------
+    
     public String[] login(String username, String passwordHash) {
         String[] respuesta = {"0", "", "ERROR"};
         String sql = "{ CALL SP_LOGIN_USUARIO(?,?,?,?,?) }";

@@ -11,9 +11,9 @@ import java.util.Date;
  */
 public class ProduccionVentasDAO {
 
-    // ----------------------------------------------------------
+    
     // REGISTRAR PRODUCCION DE LECHE  →  PKG_PRODUCCION.SP_REGISTRAR_PRODUCCION
-    // ----------------------------------------------------------
+    
     public String registrarProduccion(int idAnimal, int idEmpleado,
                                       Date fecha, String turno, double litros) {
         String resultado = "";
@@ -40,9 +40,9 @@ public class ProduccionVentasDAO {
         return resultado;
     }
 
-    // ----------------------------------------------------------
+   
     // TOTAL LITROS DE UN ANIMAL EN RANGO  →  PKG_PRODUCCION.FN_TOTAL_LITROS_ANIMAL
-    // ----------------------------------------------------------
+    
     public double totalLitrosAnimal(int idAnimal, Date inicio, Date fin) {
         double total = 0;
         String sql = "{ ? = CALL PKG_PRODUCCION.FN_TOTAL_LITROS_ANIMAL(?,?,?) }";
@@ -64,10 +64,9 @@ public class ProduccionVentasDAO {
         return total;
     }
 
-    // ----------------------------------------------------------
+    
     // REPORTE PRODUCCION DIARIA  →  PKG_PRODUCCION.SP_REPORTE_PRODUCCION_DIARIA
-    // Imprime en DBMS_OUTPUT (visible en SQL Developer / logs del servidor)
-    // ----------------------------------------------------------
+   
     public void reporteProduccionDiaria(int idFinca, Date fecha) {
         String sql = "{ CALL PKG_PRODUCCION.SP_REPORTE_PRODUCCION_DIARIA(?,?) }";
 
@@ -84,9 +83,9 @@ public class ProduccionVentasDAO {
         }
     }
 
-    // ----------------------------------------------------------
+    
     // REGISTRAR VENTA  →  PKG_VENTAS.SP_REGISTRAR_VENTA
-    // ----------------------------------------------------------
+    
     public String registrarVenta(int idAnimal, double monto,
                                  String comprador, String tipoVenta) {
         String resultado = "";
@@ -112,9 +111,9 @@ public class ProduccionVentasDAO {
         return resultado;
     }
 
-    // ----------------------------------------------------------
+    
     // TOTAL VENTAS POR TIPO  →  PKG_VENTAS.FN_TOTAL_VENTAS_TIPO
-    // ----------------------------------------------------------
+    
     public double totalVentasTipo(String tipoVenta, int anio) {
         double total = 0;
         String sql = "{ ? = CALL PKG_VENTAS.FN_TOTAL_VENTAS_TIPO(?,?) }";
