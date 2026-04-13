@@ -70,6 +70,32 @@ public class ProduccionVentasDAO {
         }
     }
 
+    public String reporteProducciones() {
+        StringBuilder resultado = new StringBuilder();
+        String sql = "SELECT a.codigo_arete AS arete, TO_CHAR(p.fecha, 'DD/MM/YYYY') AS fecha, p.litros "
+                + "FROM PRODUCCION_LECHE p "
+                + "JOIN ANIMAL a ON p.id_animal = a.id_animal "
+                + "ORDER BY p.fecha DESC";
+
+        try (Connection con = ConexionADB.getConexion(); PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                resultado.append(rs.getString("arete"))
+                        .append(" | ")
+                        .append(rs.getString("fecha"))
+                        .append(" | ")
+                        .append(rs.getDouble("litros"))
+                        .append("\n");
+            }
+
+        } catch (SQLException e) {
+            return "ERROR: " + e.getMessage();
+        }
+
+        return resultado.length() == 0 ? "Sin datos." : resultado.toString();
+    }
+
     public String registrarVenta(int idAnimal, double monto,
             String comprador, String tipoVenta) {
         String resultado = "";

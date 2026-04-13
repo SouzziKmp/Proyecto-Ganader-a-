@@ -374,6 +374,25 @@ public class Main {
         gbc.anchor = GridBagConstraints.CENTER;
         panel.add(registrarButton, gbc);
 
+        JLabel reporteTitulo = new JLabel("Reporte de producciones:");
+        JButton reporteButton = new JButton("Reporte de producciones");
+        JTextArea reporteArea = new JTextArea(10, 40);
+        reporteArea.setEditable(false);
+        reporteArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+        JScrollPane reporteScroll = new JScrollPane(reporteArea);
+
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        panel.add(reporteButton, gbc);
+
+        gbc.gridy = 6;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        panel.add(reporteScroll, gbc);
+
         registrarButton.addActionListener(e -> {
             try {
                 int idAnimal = Integer.parseInt(animalField.getText().trim());
@@ -386,6 +405,11 @@ public class Main {
             } catch (NumberFormatException ex) {
                 mostrarError("ID de animal, ID de empleado y litros deben ser numericos.");
             }
+        });
+
+        reporteButton.addActionListener(e -> {
+            String reporte = pvDAO.reporteProducciones();
+            reporteArea.setText(reporte);
         });
 
         return panel;
