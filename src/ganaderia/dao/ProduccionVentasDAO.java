@@ -143,12 +143,14 @@ public class ProduccionVentasDAO {
         StringBuilder resultado = new StringBuilder();
 
         String sql
-                = "SELECT a.codigo_arete || ' | ' || v.tipo_venta || ' | $' || v.monto AS linea "
+                = "SELECT TO_CHAR(v.fecha, 'DD/MM/YYYY') || ' | ' || "
+                + "a.codigo_arete || ' | ' || v.tipo_venta || ' | $' || v.monto || "
+                + "' | ' || NVL(v.comprador, 'N/A') AS linea "
                 + "FROM VENTA v "
                 + "JOIN ANIMAL a ON v.id_animal = a.id_animal "
                 + "JOIN POTRERO p ON a.id_potrero = p.id_potrero "
                 + "WHERE p.id_finca = ? "
-                + "ORDER BY v.fecha_venta DESC";
+                + "ORDER BY v.fecha DESC";
 
         try (Connection con = ConexionADB.getConexion(); PreparedStatement ps = con.prepareStatement(sql)) {
 

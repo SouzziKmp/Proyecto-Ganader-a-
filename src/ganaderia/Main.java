@@ -4,7 +4,7 @@ import ganaderia.dao.AnimalDAO;
 import ganaderia.dao.ProduccionVentasDAO;
 import ganaderia.dao.UsuarioDAO;
 import ganaderia.modelo.Animal;
-import ganaderia.dao.SaludDAO;
+import ganaderia.dao.SaludDao;
 import javax.swing.*;
 import java.awt.*;
 import java.math.BigInteger;
@@ -21,7 +21,7 @@ public class Main {
     private static final AnimalDAO animalDAO = new AnimalDAO();
     private static final ProduccionVentasDAO pvDAO = new ProduccionVentasDAO();
     private static final UsuarioDAO usuarioDAO = new UsuarioDAO();
-    private static final SaludDAO saludDAO = new SaludDAO();
+    private static final SaludDao saludDAO = new SaludDao();
 
     private static JFrame frame;
     private static JPanel cards;
@@ -348,6 +348,11 @@ public class Main {
         JTextField turnoField = new JTextField(10);
         JTextField litrosField = new JTextField(10);
         JButton registrarButton = new JButton("Registrar produccion");
+        JButton reporteButton = new JButton("Reporte de producciones");
+        JTextArea reporteArea = new JTextArea(10, 40);
+        reporteArea.setEditable(false);
+        reporteArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+        JScrollPane reporteScroll = new JScrollPane(reporteArea);
 
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -373,13 +378,6 @@ public class Main {
         gbc.gridy = 4;
         gbc.anchor = GridBagConstraints.CENTER;
         panel.add(registrarButton, gbc);
-
-        JLabel reporteTitulo = new JLabel("Reporte de producciones:");
-        JButton reporteButton = new JButton("Reporte de producciones");
-        JTextArea reporteArea = new JTextArea(10, 40);
-        reporteArea.setEditable(false);
-        reporteArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
-        JScrollPane reporteScroll = new JScrollPane(reporteArea);
 
         gbc.gridx = 0;
         gbc.gridy = 5;
@@ -539,7 +537,18 @@ public class Main {
         JLabel fincaLabel = new JLabel("ID finca:");
         JTextField fincaField = new JTextField(8);
         JButton fincaButton = new JButton("Reporte ventas finca");
-        JTextArea reporteArea = new JTextArea(8, 40);
+
+        JLabel invLabel = new JLabel("Inventario / salud:");
+        JButton medCriticosButton = new JButton("Medicamentos criticos");
+        JButton eventosSaludButton = new JButton("Eventos salud (EVENTO_SALUD)");
+
+        JLabel pesoEstLabel = new JLabel("Peso kg (estimado):");
+        JTextField pesoEstField = new JTextField(8);
+        JLabel razaEstLabel = new JLabel("Raza:");
+        JTextField razaEstField = new JTextField(14);
+        JButton valorEstimadoButton = new JButton("Valor venta estimado");
+
+        JTextArea reporteArea = new JTextArea(14, 48);
         reporteArea.setEditable(false);
         JScrollPane reporteScroll = new JScrollPane(reporteArea);
 
@@ -575,10 +584,37 @@ public class Main {
         gbc.gridx = 2;
         panel.add(fincaButton, gbc);
 
-        gbc.gridx = 0;
         gbc.gridy = 3;
+        gbc.gridx = 0;
+        gbc.gridwidth = 1;
+        gbc.fill = GridBagConstraints.NONE;
+        panel.add(invLabel, gbc);
+        gbc.gridx = 1;
+        panel.add(medCriticosButton, gbc);
+        gbc.gridx = 2;
+        gbc.gridwidth = 3;
+        panel.add(eventosSaludButton, gbc);
+
+        gbc.gridy = 4;
+        gbc.gridx = 0;
+        gbc.gridwidth = 1;
+        panel.add(pesoEstLabel, gbc);
+        gbc.gridx = 1;
+        panel.add(pesoEstField, gbc);
+        gbc.gridx = 2;
+        panel.add(razaEstLabel, gbc);
+        gbc.gridx = 3;
+        panel.add(razaEstField, gbc);
+        gbc.gridx = 4;
+        gbc.gridwidth = 2;
+        panel.add(valorEstimadoButton, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 5;
         gbc.gridwidth = 6;
         gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
         panel.add(reporteScroll, gbc);
 
         edadButton.addActionListener(e -> {
@@ -613,6 +649,22 @@ public class Main {
                 reporteArea.setText(reporte);
             } catch (NumberFormatException ex) {
                 mostrarError("ID finca debe ser numerico.");
+            }
+        });
+
+        medCriticosButton.addActionListener(e ->
+                reporteArea.setText(saludDAO.reporteMedicamentosCriticos()));
+
+        eventosSaludButton.addActionListener(e ->
+                reporteArea.setText(saludDAO.reporteEventosSalud()));
+
+        valorEstimadoButton.addActionListener(e -> {
+            try {
+                double peso = Double.parseDouble(pesoEstField.getText().trim().replace(',', '.'));
+                String raza = razaEstField.getText().trim();
+                reporteArea.setText(animalDAO.estimarValorVentaPorPesoRaza(peso, raza));
+            } catch (NumberFormatException ex) {
+                mostrarError("El peso debe ser un numero valido.");
             }
         });
 

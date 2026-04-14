@@ -7,9 +7,9 @@ if not exist lib (
     exit /b 1
 )
 
-nif not exist out mkdir out
+if not exist out mkdir out
 
-javac -cp "lib/*" -d out src\ganaderia\db\ConexionADB.java src\ganaderia\modelo\Animal.java src\ganaderia\dao\*.java src\ganaderia\Main.java
+javac --release 21 -cp "lib/*" -d out src\ganaderia\db\ConexionADB.java src\ganaderia\modelo\Animal.java src\ganaderia\dao\*.java src\ganaderia\Main.java
 if errorlevel 1 (
     echo.
     echo COMPILACION FALLIDA.

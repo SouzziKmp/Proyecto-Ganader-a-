@@ -160,4 +160,69 @@ public class AnimalDAO {
 
         return resultado;
     }
+
+    public String estimarValorVentaPorPesoRaza(double pesoKg, String raza) {
+        if (pesoKg <= 0) {
+            return "ERROR: El peso debe ser mayor que cero.";
+        }
+        if (raza == null || raza.trim().isEmpty()) {
+            return "ERROR: Indique la raza.";
+        }
+        String razaTrim = raza.trim();
+
+        String sqlHist = "SELECT AVG(v.monto / NULLIF(a.peso_kg, 0)) AS precio_kg, COUNT(*) AS n "
+                + "FROM venta v "
+                + "JOIN animal a ON v.id_animal = a.id_animal "
+                + "WHERE UPPER(TRIM(a.raza)) = UPPER(TRIM(?)) "
+                + "  AND a.peso_kg > 0";
+
+        try (Connection con = ConexionADB.getConexion();
+             PreparedStatement ps = con.prepareStatement(sqlHist)) {
+
+            ps.setString(1, razaTrim);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    int n = rs.getInt("n");
+                    double precioKg = rs.getDouble("precio_kg");
+                    if (n > 0 && !rs.wasNull() && precioKg > 0) {
+                        double estimado = precioKg * pesoKg;
+                        return String.format(
+                                "Raza: %s | Peso: %.2f kg%n"
+                                        + "Basado en %d venta(s) historicas (promedio $/kg sobre peso al vender).%n"
+                                        + "Valor estimado: $%,.2f%n",
+                                razaTrim, pesoKg, n, estimado);
+                    }
+                }
+            }
+
+            double refKg = precioReferenciaPorKg(razaTrim);
+            double estimadoRef = refKg * pesoKg;
+            return String.format(
+                    "Raza: %s | Peso: %.2f kg%n"
+                            + "Sin ventas historicas suficientes para esta raza; referencia interna $/kg.%n"
+                            + "Valor estimado referencial: $%,.2f%n",
+                    razaTrim, pesoKg, estimadoRef);
+
+        } catch (SQLException e) {
+            return "ERROR: " + e.getMessage();
+        }
+    }
+
+    private static double precioReferenciaPorKg(String raza) {
+        String r = raza.toUpperCase();
+        if (r.contains("ANGUS")) {
+            return 4.2;
+        }
+        if (r.contains("HEREFORD") || r.contains("BRAHMAN")) {
+            return 3.6;
+        }
+        if (r.contains("HOLSTEIN") || r.contains("JERSEY")) {
+            return 3.0;
+        }
+        if (r.contains("CEBU") || r.contains("BOS")) {
+            return 3.2;
+        }
+        return 3.4;
+    }
 }
